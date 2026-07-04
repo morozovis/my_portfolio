@@ -1,0 +1,24 @@
+---
+- name: Send sccript
+  hosts: targets
+  become: true
+  vars:
+    script_name: analizator_log.sh
+    target_dir: /opt/scripts
+  tasks:
+    - name: Create dir
+      file:
+        path: "{{ target_dir }}"
+        state: directory
+        mode: '0755'
+    - name: Copy script
+      copy:
+        src: "{{ script_name }}"
+        dest: "{{ target_dir }}/{{ script_name }}"
+        mode: '0755'
+    - name: Run script
+      command: "{{ target_dir }}/{{ script_name }} /var/log/syslog"
+      register: script_output
+    - name:
+      debug:
+        var: script_output.stdout_lines
